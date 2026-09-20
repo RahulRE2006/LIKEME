@@ -1,4 +1,10 @@
-const { pool, obtenerPosts, agregarPost } = require("./consultas.js");
+const {
+  pool,
+  obtenerPosts,
+  agregarPost,
+  modificarPost,
+  eliminarPost,
+} = require("./consultas.js");
 const express = require("express");
 const cors = require("cors");
 
@@ -14,11 +20,33 @@ app.get("/", (req, res) => {
   res.send("ola w");
 });
 app.get("/posts", async (req, res) => {
-  const posts = await obtenerPosts();
-  res.json(posts);
+  try {
+    const posts = await obtenerPosts();
+    res.json(posts);
+  } catch (error) {
+    console.error("Error al obtener los posts:", error);
+    res.status(500).json({ error: "Error al obtener los posts" });
+  }
 });
 app.post("/posts", async (req, res) => {
-  const { titulo, url, descripcion } = req.body;
-  await agregarPost(titulo, url, descripcion);
-  res.send("viaje agregado");
+  try {
+    const { titulo, url, descripcion } = req.body;
+    await agregarPost(titulo, url, descripcion);
+    res.send("viaje agregado");
+  } catch (error) {
+    console.error("error al postear :", error);
+  }
+});
+app.put("/posts/:id", async (req, res) => {
+  const { id } = req.params;
+  const { titulo, img, descripcion } = req.body;
+  await modificarPost(titulo, img, descripcion, id);
+  res.send("modificado");
+});
+app.delete("/posts/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await eliminarPost(id);
+    res.send("eliminado");
+  } catch (error) {}
 });

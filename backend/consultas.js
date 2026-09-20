@@ -21,5 +21,24 @@ const obtenerPosts = async () => {
   console.log(rows);
   return rows;
 };
+const modificarPost = async (titulo, img, descripcion, id) => {
+  const consulta =
+    "UPDATE posts SET titulo = $1, img = $2, descripcion = $3 WHERE id = $4 RETURNING *; ";
+  const values = [titulo, img, descripcion, id];
+  const result = await pool.query(consulta, values);
+  return result.rows[0];
+};
+const eliminarPost = async (id) => {
+  const consulta = "DELETE FROM posts WHERE id = $1";
+  const values = [id];
+  const result = await pool.query(consulta, values);
+  return result.rows[0];
+};
 
-module.exports = { pool, agregarPost, obtenerPosts };
+module.exports = {
+  pool,
+  agregarPost,
+  obtenerPosts,
+  modificarPost,
+  eliminarPost,
+};
